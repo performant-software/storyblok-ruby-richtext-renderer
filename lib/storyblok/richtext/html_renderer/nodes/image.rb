@@ -9,7 +9,7 @@ module Storyblok::Richtext
       def single_tag
         [{
           tag: "img",
-          attrs: @node['attrs'].slice('src', 'alt', 'title')
+          attrs: @node['attrs'].slice('src', 'alt', 'title') if !@node['attrs'].nil?
         }]
       end
     end
