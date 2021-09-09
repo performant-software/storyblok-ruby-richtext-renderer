@@ -7,11 +7,15 @@ module Storyblok::Richtext
       end
 
       def tag
-        [
+        sliceed = {}
+        if !@node['attrs'].nil?
+          sliced = @node['attrs'].slice('class')
+        end
+        return [
           'pre',
           {
             tag: 'code',
-            attrs: @node['attrs'].slice('class') if !@node['attrs'].nil?
+            attrs: sliced
           }
         ]
       end

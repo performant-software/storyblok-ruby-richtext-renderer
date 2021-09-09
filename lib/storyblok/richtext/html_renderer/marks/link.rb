@@ -13,9 +13,14 @@ module Storyblok::Richtext
           attrs['href'] = "#{attrs['href']}##{attrs['anchor']}"
         end
 
+        sliced = {} 
+        if !attrs.nil?
+          sliced = attrs.slice('href', 'target')
+        end
+
         [{
           tag: "a",
-          attrs: attrs.slice('href', 'target') if !attrs.nil?
+          attrs: sliced
         }]
       end
     end

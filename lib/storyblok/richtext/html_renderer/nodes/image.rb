@@ -7,9 +7,13 @@ module Storyblok::Richtext
       end
 
       def single_tag
-        [{
+        sliceed = {}
+        if !@node['attrs'].nil?
+          sliced = @node['attrs'].slice('src', 'alt', 'title')
+        end
+        return [{
           tag: "img",
-          attrs: @node['attrs'].slice('src', 'alt', 'title') if !@node['attrs'].nil?
+          attrs: sliced
         }]
       end
     end
