@@ -11,6 +11,11 @@ module Storyblok
     require_relative "html_renderer/marks/italic"
     require_relative "html_renderer/marks/link"
     require_relative "html_renderer/marks/styled"
+    require_relative "html_renderer/marks/anchor"
+    require_relative "html_renderer/marks/highlight"
+    require_relative "html_renderer/marks/subscript"
+    require_relative "html_renderer/marks/superscript"
+    require_relative "html_renderer/marks/text_style"
     require_relative "html_renderer/nodes/node"
     require_relative "html_renderer/nodes/bullet_list"
     require_relative "html_renderer/nodes/code_block"
@@ -25,6 +30,7 @@ module Storyblok
     require_relative "html_renderer/nodes/horizontal_rule"
     require_relative "html_renderer/nodes/text"
     require_relative "html_renderer/nodes/blok"
+    require_relative "html_renderer/nodes/emoji"
 
     class HtmlRenderer
       def initialize
@@ -36,7 +42,12 @@ module Storyblok
           Storyblok::Richtext::Marks::Code,
           Storyblok::Richtext::Marks::Italic,
           Storyblok::Richtext::Marks::Link,
-          Storyblok::Richtext::Marks::Styled
+          Storyblok::Richtext::Marks::Styled,
+          Storyblok::Richtext::Marks::Anchor,
+          Storyblok::Richtext::Marks::Highlight,
+          Storyblok::Richtext::Marks::Subscript,
+          Storyblok::Richtext::Marks::Superscript,
+          Storyblok::Richtext::Marks::TextStyle
         ]
         @nodes = [
           Storyblok::Richtext::Nodes::HorizontalRule,
@@ -50,7 +61,8 @@ module Storyblok
           Storyblok::Richtext::Nodes::OrderedList,
           Storyblok::Richtext::Nodes::Paragraph,
           Storyblok::Richtext::Nodes::Text,
-          Storyblok::Richtext::Nodes::Blok
+          Storyblok::Richtext::Nodes::Blok,
+          Storyblok::Richtext::Nodes::Emoji
         ]
       end
 
@@ -64,6 +76,10 @@ module Storyblok
 
       def add_mark(mark)
         @marks.push(mark)
+      end
+
+      def remove_mark(mark)
+        @marks.delete(mark)
       end
 
       def render(data)
@@ -99,6 +115,8 @@ module Storyblok
           html.push(render_tag(node.single_tag))
         elsif node and node.html
           html.push(node.html)
+        elsif item['type'] == 'emoji'
+          html.push(render_emoji(item))
         end
 
         html.push(render_closing_tag(node.tag)) if node and node.tag
@@ -158,6 +176,24 @@ module Storyblok
           end
         end
         found.first
+      end
+
+      def render_emoji(item)
+        if item['attrs']['emoji']
+          return item['attrs']['emoji']
+        end
+
+        emoji_image_container = [{
+          tag: 'img',
+          attrs: {
+            src: item['attrs']['fallbackImage'],
+            draggable: 'false',
+            loading: 'lazy',
+            align: 'absmiddle',
+          },
+        }]
+
+        render_tag(emoji_image_container, ' /')
       end
     end
   end
